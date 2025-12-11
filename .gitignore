@@ -5,5 +5,8 @@
 node_modules
 .env
 config/env/config.env
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
