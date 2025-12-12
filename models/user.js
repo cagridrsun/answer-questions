@@ -106,11 +106,11 @@ UserSchema.methods.generateJwtFromUser = function () {
     return token;
 }
 
-UserSchema.pre("remove", async function () {
+UserSchema.pre("deleteOne", { document: true, query: false }, async function () {
     await Question.deleteMany({
         user: this._id
     });
-})
+});
 
 
 module.exports = mongoose.model("User", UserSchema)
