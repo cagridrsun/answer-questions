@@ -11,5 +11,5 @@ router.get("/", getAllQuestions);
 router.get("/:id", checkQuestionExist, getSingleQuestion)
 router.put("/:id/edit", [getAccessToRoute, checkQuestionExist, getQuestionOwnerAccess], editQuestion)
 router.delete("/:id/delete", [getAccessToRoute, checkQuestionExist, getQuestionDeleteAccess], deleteQuestion)
-router.use("/:question_id/answer", checkQuestionExist, answer)
+router.use("/:question_id/answers", checkQuestionExist, answer)
 module.exports = router; 
