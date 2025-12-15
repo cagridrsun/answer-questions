@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const Question = require("../models/Question");
 const AnswerSchema = new Schema({
     content: {
         type: String,
@@ -25,6 +26,19 @@ const AnswerSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Question",
         required: [true, "Please provide a question"]
+    }
+})
+AnswerSchema.pre("save", async function (next) {
+    if (this.isModified("user")) {
+        return next();
+    }
+    try {
+        const question = await Question.findById(this.question);
+        question.answers.push(this._id);
+        await question.save();
+        next();
+    } catch (error) {
+        next(error);
     }
 })
 
