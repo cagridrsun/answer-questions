@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../../models/user.js");
 const Question = require("../../models/Question.js");
 const { isTokenIncluded, getAccessTokenFromHeader } = require("../../helpers/authorizate/tokenHelpers");
+const Answer = require("../../models/answer.js");
 
 const getAccessToRoute = (req, res, next) => {
     // Environment variable'ı al
@@ -71,9 +72,26 @@ const getQuestionDeleteAccess = asyncErrorWrapper(async (req, res, next) => {
     }
     next()
 })
+const getAnswerOwnerAccess = asyncErrorWrapper(async (req, res, next) => {
+    const userId = req.user.id;
+    const answerId = req.params.answer_id;
+    const answer = await Answer.findById(answerId);
+
+    if (!answer) {
+        return next(new customError("Cevap bulunamadı", 404));
+    }
+
+    if (answer.user.toString() !== userId.toString()) //toString() ile id'ler string'e çevrildi.
+    {
+        return next(new customError("Sadece cevabın sahibi cevabı düzenleyebilir", 403));
+    }
+    next()
+
+})
 module.exports = {
     getAccessToRoute,
     getAdminAccess,
     getQuestionOwnerAccess,
-    getQuestionDeleteAccess
+    getQuestionDeleteAccess,
+    getAnswerOwnerAccess
 };
