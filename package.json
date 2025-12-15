@@ -13,7 +13,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "import": "node dummy-generator.js --import",
+    "delete": "node dummy-generator.js --delete"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
