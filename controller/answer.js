@@ -79,7 +79,7 @@ const likeAnswer = asyncErrorWrapper(async (req, res, next) => {
 const unlikeAnswer = asyncErrorWrapper(async (req, res, next) => {
     const { answer_id } = req.params
     const answer = await Answer.findById(answer_id)
-    if (answer.likes.includes(req.user.id)) {
+    if (!answer.likes.includes(req.user.id)) {
         return next(new CustomError("You can not undo operation for this answer", 400))
     }
     const index = answer.likes.indexOf(req.user.id)
