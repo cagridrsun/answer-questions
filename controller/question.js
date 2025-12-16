@@ -9,14 +9,8 @@ const getAllQuestions = asyncErrorWrapper(async (req, res, next) => {
         path: "user",
         select: "name profile_image"
     }
-    //search
-    if (req.query.search) {
-        const searchObject = {}
 
-        const regex = new RegExp(req.query.search, "i");
-        searchObject["title"] = regex;
-        query = query.where(searchObject);
-    }
+
     //populate user
     if (populate) {
         query = query.populate(populateObject);
@@ -42,6 +36,18 @@ const getAllQuestions = asyncErrorWrapper(async (req, res, next) => {
         }
     }
     query = query.skip(startIndex).limit(limit);
+
+    //sort : req.query.sortBy most-answered, most-liked, most-recent
+    const sortKey = req.query.sortBy;
+    if (sortKey === "most-answered") {
+        query = query.sort({ answersCount: -1 })
+    }
+    if (sortKey === "most-liked") {
+        query = query.sort({ likesCount: -1 })
+    }
+    if (sortKey === "most-recent") {
+        query = query.sort({ createdAt: -1 })
+    }
     const questions = await query;
     return res.status(200).json({
         success: true,
@@ -106,6 +112,7 @@ const likeQuestion = asyncErrorWrapper(async (req, res, next) => {
         return next(new CustomError("You already liked this question", 400));
     }
     question.likes.push(req.user.id);
+    question.likesCount = question.likes.length;
     question = await question.save();
     res.status(200).json({
         success: true,
@@ -121,6 +128,7 @@ const unlikeQuestion = asyncErrorWrapper(async (req, res, next) => {
     }
     const index = question.likes.indexOf(req.user.id);
     question.likes.splice(index, 1);
+    question.likesCount = question.likes.length;
     question = await question.save();
     res.status(200).json({
         success: true,
