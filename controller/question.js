@@ -3,8 +3,26 @@ const CustomError = require("../middleware/errors/customError");
 const asyncErrorWrapper = require("express-async-handler");
 
 const getAllQuestions = asyncErrorWrapper(async (req, res, next) => {
-    const questions = await Question.find();
-    res.status(200).json({
+    let query = Question.find();
+    const populate = true;
+    const populateObject = {
+        path: "user",
+        select: "name profile_image"
+    }
+    //search
+    if (req.query.search) {
+        const searchObject = {}
+
+        const regex = new RegExp(req.query.search, "i");
+        searchObject["title"] = regex;
+        query = query.where(searchObject);
+    }
+    //populate user
+    if (populate) {
+        query = query.populate(populateObject);
+    }
+    const questions = await query;
+    return res.status(200).json({
         success: true,
         data: questions
     })
