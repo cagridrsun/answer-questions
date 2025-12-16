@@ -3,61 +3,7 @@ const CustomError = require("../middleware/errors/customError");
 const asyncErrorWrapper = require("express-async-handler");
 
 const getAllQuestions = asyncErrorWrapper(async (req, res, next) => {
-    let query = Question.find();
-    const populate = true;
-    const populateObject = {
-        path: "user",
-        select: "name profile_image"
-    }
-
-
-    //populate user
-    if (populate) {
-        query = query.populate(populateObject);
-    }
-
-    //Pagination
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 5;
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    const pagination = {}
-    const total = await Question.countDocuments();
-    if (startIndex > 0) {
-        pagination.previous = {
-            page: page - 1,
-            limit: limit
-        }
-    }
-    if (endIndex < total) {
-        pagination.next = {
-            page: page + 1,
-            limit: limit
-        }
-    }
-    query = query.skip(startIndex).limit(limit);
-
-    //sort : req.query.sortBy most-answered, most-liked, most-recent
-    const sortKey = req.query.sortBy;
-    if (sortKey === "most-answered") {
-        query = query.sort({ answersCount: -1 })
-    }
-    if (sortKey === "most-liked") {
-        query = query.sort({ likesCount: -1 })
-    }
-    if (sortKey === "most-recent") {
-        query = query.sort({ createdAt: -1 })
-    }
-    const questions = await query;
-    return res.status(200).json({
-        success: true,
-        count: questions.length,
-        pagination: pagination,
-        data: questions
-    })
-
-
-
+    return res.status(200).json(res.queryResults)
 })
 const getSingleQuestion = asyncErrorWrapper(async (req, res, next) => {
     const { id } = req.params;
