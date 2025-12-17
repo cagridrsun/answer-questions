@@ -6,7 +6,7 @@ const getAllQuestions = asyncErrorWrapper(async (req, res, next) => {
     return res.status(200).json(res.queryResults)
 })
 const getSingleQuestion = asyncErrorWrapper(async (req, res, next) => {
-    res.status(200).json({
+   return res.status(200).json({
         success: true,
         data: res.queryResult
     })
